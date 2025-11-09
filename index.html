@@ -1,0 +1,56 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.app-section');
+    const actionButtons = document.querySelectorAll('.btn-primary, .btn-secondary');
+
+    // Función para mostrar una sección específica
+    const showSection = (targetId) => {
+        sections.forEach(section => {
+            if (section.id === targetId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+
+        // Actualizar la clase 'active' en la navegación
+        navLinks.forEach(link => {
+            if (link.dataset.target === targetId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    };
+
+    // Manejar clics en los enlaces de navegación
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+            const targetId = link.dataset.target;
+            showSection(targetId);
+            // Opcional: actualizar el hash de la URL sin recargar
+            window.history.pushState(null, '', link.getAttribute('href'));
+        });
+    });
+
+    // Manejar clics en los botones de acción (ej. "Empezar Simulacro" en la sección de inicio)
+    actionButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = button.dataset.target;
+            showSection(targetId);
+            // También actualiza la navegación para que se vea la sección correcta
+            navLinks.forEach(link => {
+                if (link.dataset.target === targetId) {
+                    window.history.pushState(null, '', link.getAttribute('href'));
+                }
+            });
+        });
+    });
+
+    // Manejar la navegación inicial o al recargar
+    const initialHash = window.location.hash.substring(1); // Remover el '#'
+    const initialSectionId = initialHash ? `${initialHash}-section` : 'home-section';
+    showSection(initialSectionId);
+});
